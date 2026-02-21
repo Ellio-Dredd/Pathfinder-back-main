@@ -13,7 +13,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000", # Keep for CRA compatibility
         "http://localhost:5173", # Standard Vite port
-        "http://localhost:5174"  # Your current Vite port
+        "http://localhost:5174",
+        "https://pathfinderlk.netlify.app/"  # Your current Vite port
     ],
     allow_credentials=True,
     allow_methods=["*"],
