@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
@@ -5,8 +6,12 @@ import numpy as np
 import random
 import requests
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
+OSRM_BASE_URL = os.getenv("OSRM_BASE_URL", "http://localhost:5000")
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,7 +45,7 @@ class RouteRequest(BaseModel):
 # --- 1. REAL OSRM MATRIX ---
 def get_osrm_matrix(locations):
     coords = ";".join([f"{loc.lng},{loc.lat}" for loc in locations])
-    url = f"http://localhost:5000/table/v1/driving/{coords}?annotations=duration"
+    url = f"{OSRM_BASE_URL}/table/v1/driving/{coords}?annotations=duration"
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -65,7 +70,7 @@ def get_osrm_matrix(locations):
 # --- 2. OSRM VISUALS ---
 def get_road_geometry(sorted_locations):
     coords = ";".join([f"{loc.lng},{loc.lat}" for loc in sorted_locations])
-    url = f"http://localhost:5000/route/v1/driving/{coords}?overview=full&geometries=geojson"
+    url = f"{OSRM_BASE_URL}/route/v1/driving/{coords}?overview=full&geometries=geojson"
     try:
         response = requests.get(url)
         if response.status_code == 200 and "routes" in response.json():
